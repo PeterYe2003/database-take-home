@@ -103,8 +103,8 @@ def optimize_graph(
         # This is the node next in the line
         next_node = (int(node) + 1) % 500
         new_edge = {next_node: 1}
-        if next_node != 0 and int(node) > 50:
-            new_edge[0] = 0.4
+        if int(node) > 70:
+            new_edge = {0: 1}
         optimized_graph[node] = new_edge
     # =============================================================
     #
