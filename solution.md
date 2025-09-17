@@ -78,12 +78,14 @@ My first iteration was just a simple cycle from 0 to 499. This ensured a 100% su
 My next method was to add more backward edges to 0, especially for larger node values. This improved my average path length to 15, but 
 the success rate was low because I was getting caught in a lot of cycles.
 
-Then I realized that the odds of a large node being queried was really low, so I just ensured that nodes greater than 100
-always went to $0$. This was the biggest improvement in my method, as it did not decrease my accuracy by much, but it brought my
-median path length to 9. The only way to improve my graph beyond this point was to decrease my median path length to 8.
-However, for this to be a worthwhile effort, $\text{optimized rate} * (1+\log(1+\frac{560}{8})) > 100 * (1+\log(1+\frac{560}{9}))$, as the
+I realized that the odds of a large node being queried was really low, so I just ensured that nodes greater than 100
+always went to $0$. This was the biggest improvement in my method, as I had 100% accuracy and my
+median path length decreased to 9. The only way to improve my graph was to decrease my median path length to 8.
+For this to be a worthwhile effort, $\text{optimized rate} * (1+\log(1+\frac{560}{8})) > 100 * (1+\log(1+\frac{560}{9}))$, as the
 naive random path length was around 560. Thus, the success rate must be greater than 98.22% (otherwise we’re better off 
 just getting 100% success rate with a median path length of 9.0). I was able to achieve a good accuracy by just playing around with the bound I used
-for when I only gave the nodes an edge to 0, and the weights on the backward edges from 8 onwards.
+for when I only gave the nodes an edge to 0, and the weights on the backward edges on nodes 8+ to 0.
+
+I also thought about some cluster ideas, but they were all worse.
 
 Overall this was a very fun problem!
