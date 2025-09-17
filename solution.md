@@ -50,8 +50,8 @@ only one edge going to the 0 node.
 I ran my graph on 10,000 queries and I got a success rate of 100%, with a median path length of 8, giving an overall score of 530.
 I also claim that it's not possible to get a median of 7 without having a success rate > 90%. Notice that the optimal walk (0,1,...,)
 gets to the queried node in <= 7 steps only 53% of the time, as $\int_{0}^7 0.1e^{-0.1x} dx = 0.503$. However, because the first node is randomly chosen,
-the best path becomes n,0,1,..., and the n start just wastes a step over half the time. Thus, even if we can do the optimal path given a random starting node,
-the entire distribution of random walk lengths would be shifted by close to one step, so we can't get a median of 7 while having a high success rate. Thus, what I coded should be close to optimal
+the best path becomes n,0,1,..., and the n start just wastes a step like, over 90% of the time (because P(n = query node) < 0.1). Thus, even if we can do the optimal path given a random starting node,
+the entire distribution of random walk lengths would be increase by close to one step, so we can't get a median of 7 while having a high success rate. Thus, what I coded should be close to optimal
 (though the success rate isn't truly 100% as my graph fails on large node queries which are rare. A better graph would have a higher bound than 90).
 
 ### Trade-offs & Limitations
