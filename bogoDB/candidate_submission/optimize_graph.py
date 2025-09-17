@@ -104,8 +104,11 @@ def optimize_graph(
         next_node = (int(node) + 1) % 500
         new_edge = {next_node: 1}
         if int(node) > 90:
+            # if a node is > 90, we only give it one edge to the 0 node.
             new_edge = {0: 1}
-        if int(node) >= 8:
+        elif int(node) >= 8:
+            # if the node is >=8, we give it some small probability to go to 0.
+            # This decreases our median path length, without much cost to success rate.
             new_edge[0] = 0.05 + (int(node)-30)*0.001
         optimized_graph[node] = new_edge
     # =============================================================
