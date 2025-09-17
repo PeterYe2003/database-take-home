@@ -5,7 +5,8 @@
 
 [Describe how you analyzed the query patterns and what insights you found]
 
-latex test $\int_0^1$
+generate_initial_data.py gives the distribution of queries which is:
+exp_values = np.random.exponential(scale=1 / lambda_param, size=num_queries)
 
 ### Optimization Strategy
 
