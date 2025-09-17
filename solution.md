@@ -21,16 +21,26 @@ to the $0$ node as quickly as possible, so we want a lot of nodes pointing towar
 ### Optimization Strategy
 
 I’m being assessed on two metrics being the success rate and the median path length, where
-$$\text{path multiplier} = \log(1+ \frac{\text{random median}}{\text{optimized median}})$$
-My combined score is just $optimized rate * (1+path_multiplier)$.
+$\text{path multiplier} = \log(1+ \frac{\text{random median}}{\text{optimized median}})$
+My combined score is just $\text{optimized rate} * (1+\text{path multiplier})$.
 
-Thus, my goal is to optimize for the median path length while maintaining a high overall success rate. 
+Thus, my goal is to optimize for the median path length while maintaining a high overall success rate. This was interesting
+because optimizing for median performance is quite different from optimizing for average performance. In order to get a low median path length,
+we need to get the path $n, 0, 1, ..., 499$ very frequently. This requires $n$ to have a high edge weight to $0$, but this will
+result in a lot of loops because we could go $9,0,1,...,9,0...$.
+
+First optimization is to make sure we spend as little time as possible traversing large nodes. We do this by having only giving them outgoing
+edges to $0$, and no incoming edges. We set the bound to arbitrarily be 80 nodes, as nodes > 80 collectively have less than a 0.03% chance to be queried.
+Second optimization is to connect the nodes in a chain $0->1->2->3->...->80$. This way, after we hit node 0, we start on the optimal path.
+
+For nodes > 7, 
 
 
 
 ### Implementation Details
 
-[Describe the key aspects of your implementation]
+The implementation was extremely straightforward.
+
 
 ### Results
 
