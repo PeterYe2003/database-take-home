@@ -3,8 +3,8 @@
 
 ### Approach & Analysis
 
-This is supported by the charts in query_distribution.png show what seems to be a fairly quickly exponentially decreasing (the pattern is more clear after I increased each test to look at 5000 queries).
-function where smaller numbers are queried more often than larger numbers.  The file generate_initial_data.py gives the distribution of queries which is:
+The charts in query_distribution.png show the node queried frequency decreases at an exponential rate with respect to the
+number on the node. The file generate_initial_data.py gives the distribution of queries which is:
 exp_values = np.random.exponential(scale=1 / lambda_param, size=num_queries).
 In constants.py, we also see that lambda_param is 0.1. Thus, we are sampling
 from the distribution $0.1*e^{-0.1x}$. 
@@ -26,7 +26,7 @@ My combined score is just $\text{optimized rate} * (1+\text{path multiplier})$.
 
 Thus, my goal is to optimize for the median path length while maintaining a high overall success rate. This was interesting
 because optimizing for median performance is quite different from optimizing for average performance. In order to get a low median path length,
-we need to start with the path n, 0, 1, ..., 499 frequently. This requires $n$ to have a high edge weight to 0, but a tradeoff is that 
+we need to start with the path n, 0, 1, ..., 7 frequently. This requires all $n$ to have a high edge weight to 0, but a tradeoff is that 
 the random walk will have more loops because we could go n,0,1,...,n,0....
 
 First optimization is to make sure we spend as little time as possible traversing large nodes. We do this by having only giving them outgoing
@@ -34,9 +34,9 @@ edges to 0, and no incoming edges. We say large nodes are nodes > 90, as they co
 Second optimization is to connect the nodes in a chain $0 \to 1 \to 2 \to ... \to 90$. This way, after we hit node 0, we start on the optimal path.
 
 For nodes > 7, we also give them a low chance to be sent back to 0. This is good, because 7,...,15 is strictly worse than
-a walk that goes from 7,0,1,...,6. Also, the best possible median is 8 (will justify in results), so we want to
-maximize P(path length <= 8), and overall success ratio. Looping to 0 increases the chance of getting a short path, but decreases 
-the chance we succeed in finding the node (as we will have more loops in our path, so we might not reach larger nodes before 10k steps).
+a walk that goes from 7,0,1,...,6. Also, the best possible median is 8 (will justify in results), so for any node > 7, looping back to 0
+increases the chance of getting a short path, but also slightly decreases the chance we succeed in finding larger nodes greater than it
+(as we will have more loops in our path, so we might not reach larger nodes before 10k steps).
 
 
 ### Implementation Details
@@ -86,6 +86,6 @@ naive random path length was around 560. Thus, the success rate must be greater 
 just getting 100% success rate with a median path length of 9.0). I was able to achieve a good accuracy by just playing around with the bound I used
 for when I only gave the nodes an edge to 0, and the weights on the backward edges on nodes 8+ to 0.
 
-I also thought about some cluster ideas, but they were all worse.
+I also thought about some cluster structures, but they were all worse.
 
 Overall this was a very fun problem!
