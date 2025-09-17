@@ -84,7 +84,7 @@ median path length decreased to 9. The only way to improve my graph was to decre
 For this to be a worthwhile effort, $\text{optimized rate} * (1+\log(1+\frac{560}{8})) > 100 * (1+\log(1+\frac{560}{9}))$, as the
 naive random path length was around 560. Thus, the success rate must be greater than 98.22% (otherwise we’re better off 
 just getting 100% success rate with a median path length of 9.0). I was able to achieve a good accuracy by just playing around with the bound I used
-for when I only gave the nodes an edge to 0, and the weights on the backward edges on nodes 8+ to 0.
+for when I only gave the nodes an edge to 0, and the weights on the backward edges from nodes > 8 to the 0 node.
 
 I also thought about some cluster structures, but they were all worse.
 
