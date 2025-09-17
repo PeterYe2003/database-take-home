@@ -15,7 +15,7 @@ However, we can't choose our starting node so probably the best we can do is n,0
 The probability of querying a node greater than n is approximately 
 $\int_{n}^{500} 0.1e^{-0.1x}dx$. For $n > 100$, this integral is around $10^{-5}$, so we don't actually care too much
 being able to reach nodes with large numbers as they're queried so rarely. If we start on a large number, we want to get
-to the $0$ node as quickly as possible, so we want a lot of nodes pointing towards $0$ node.
+to the 0 node as quickly as possible, so we want a lot of nodes pointing towards 0 node.
 
 
 ### Optimization Strategy
@@ -26,44 +26,61 @@ My combined score is just $\text{optimized rate} * (1+\text{path multiplier})$.
 
 Thus, my goal is to optimize for the median path length while maintaining a high overall success rate. This was interesting
 because optimizing for median performance is quite different from optimizing for average performance. In order to get a low median path length,
-we need to start with the path n, 0, 1, ..., 499 frequently. This requires $n$ to have a high edge weight to $0$, but this will
-result in a lot of loops because we could go $n,0,1,...,n,0...$.
+we need to start with the path n, 0, 1, ..., 499 frequently. This requires $n$ to have a high edge weight to 0, but this will
+result in a lot of loops because we could go n,0,1,...,n,0....
 
 First optimization is to make sure we spend as little time as possible traversing large nodes. We do this by having only giving them outgoing
-edges to $0$, and no incoming edges. We say large nodes are nodes > 80, as they collectively have less than a 0.03% chance to be queried.
-Second optimization is to connect the nodes in a chain $0 \to 1 \to 2 \to ... \to 80$. This way, after we hit node 0, we start on the optimal path.
+edges to 0, and no incoming edges. We say large nodes are nodes > 90, as they collectively have less than a 0.03% chance to be queried.
+Second optimization is to connect the nodes in a chain $0 \to 1 \to 2 \to ... \to 90$. This way, after we hit node 0, we start on the optimal path.
 
 For nodes > 7, we also give them a low chance to be sent back to 0. This is good, because 7,...,15 is strictly worse than
 a walk that goes from 7,0,1,...,6. Also, the best possible median is 8 (will justify in iteration journey), so we want to
-maximize P(path length <= 8), and overall success ratio. Looping to $0$ increases the chance of getting a short path, but decreases 
-the chance we succeed in finding the node (as we will have more loops in our path, so we might not reach node 80 before 10k steps).
+maximize P(path length <= 8), and overall success ratio. Looping to 0 increases the chance of getting a short path, but decreases 
+the chance we succeed in finding the node (as we will have more loops in our path, so we might not reach node 90 before 10k steps).
 
 
 ### Implementation Details
 
-The implementation was extremely straightforward. I just did edges from n to n+1 for $ n \leq 80$, some edges to $0$
-where the weight is linearly increasing with respect to $n$ for $8 \leq n \leq 80$, and for $n > 80$, I had
-only one edge going to $0$.
+The implementation was extremely straightforward. I just did edges from n to n+1 for $n \leq 90$, some edges to 0
+where the weight is linearly increasing with respect to $n$ for $8 \leq n \leq 90$, and for $n > 90$, I had
+only one edge going to 0.
 
 ### Results
 
-I ran my graph on 5,000 queries and I got a success rate of 100%, with a median path length of 8, giving an overall score of 527.
-I also claim that it's not possible to get a median of 7 without having a success rate > 80%. Notice that the optimal walk (0,1,...,)
+I ran my graph on 10,000 queries and I got a success rate of 100%, with a median path length of 8, giving an overall score of 530.
+I also claim that it's not possible to get a median of 7 without having a success rate > 90%. Notice that the optimal walk (0,1,...,)
 gets to the queried node in <= 7 steps only 53% of the time, as $int_{0}^7 0.1e^{-0.1x} dx = 0.503$. However, because the first node is randomly chosen,
-the best path becomes n,0,1,..., and the n start just wastes a step over half the time. Thus, even if we can do the next best path, the entire distribution is basically shifted up
-by one step, so we can't get a median of 7 while having a high success rate. Thus, what I coded should be close to optimal
-(though the success rate isn't truly 100% as my graph fails. A better graph would have a higher bound than 80).
+the best path becomes n,0,1,..., and the n start just wastes a step over half the time. Thus, even if we can do the optimal path given a random starting node,
+the entire distribution of random walk lengths would be shifted by close to one step, so we can't get a median of 7 while having a high success rate. Thus, what I coded should be close to optimal
+(though the success rate isn't truly 100% as my graph fails on large node queries which are rare. A better graph would have a higher bound than 90).
 
 ### Trade-offs & Limitations
 
-[Discuss any trade-offs or limitations of your approach]
+The main trade-off was between success rate and median path length. I realized that the optimal median path length was 8,
+so you want to try to do $n,0,1,2,3,4,5,6$ as much as possible (if $n \geq 7$), and otherwise some permutation of 
+$0,1,2,3,4,5,6,7$. This would look like sending any node $n \geq 7$ to 0 with high probability. However, the trade-off was that
+we would run into more loops, which would make it hard to find a node like 40 in 10k steps because we waste too many steps looping
+back to 0. Thus, there's a balance for how often we can go back to 0.
+
+On first-order, we should go back to 0 more frequently when we are on a larger node as the chance that the query node has
+an even larger number is just smaller. Thus, we don't harm our success rate as much, and the increase in the chance we find a path 
+with length less than 9 is larger (going to node 0 is better when your alternative is 101 vs 12). Thus, I went for a graph where the weight
+that each node had of going back to 0 was larger as the node value increased (starting from 8).
+
+The cap at 90 is also a limitation as my graph fails whenever a node > 90 is queried. The parameters for my weights can be further optimized
+through some grid search, so maybe a better graph would have an upper bound of 150 or use a smarter increase in weights on the edges to 0 (instead of piecewise linear).
 
 ### Iteration Journey
 
-[Briefly describe your iteration process - what approaches you tried, what you learned, and how your solution evolved]
+My first iteration was just a simple cycle from 0 to 499. This ensured a 100% success rate and a median path length of 250
+, but it did not take advantage of the fact that larger numbers are queried exponentially less frequently than smaller numbers.
 
----
+My next method was to add more backward edges to 0, especially for larger node values. This improved my average path length to 15, but 
+the success rate was low because I was getting caught in a lot of cycles.
 
-* Be concise but thorough - aim for 500-1000 words total
-* Include specific data and metrics where relevant
-* Explain your reasoning, not just what you did
+Then I realized that the odds of a large node being queried was really low, so I just ensured that nodes greater than 100
+always went to $0$. This was the biggest improvement in my method, as it did not decrease my accuracy by much, but it brought my
+median path length to 9. The only way to improve my graph beyond this point was to decrease my median path length to 8.
+However, for this to be a worthwhile effort, $\text{optimized rate} * (1+\log(1+\frac{560}{8})) > 100 * (1+\log(1+\frac{560}{9}))$, as the
+naive random path length was around 560. Thus, the success rate must be greater than 98.22% (otherwise we’re better off 
+just getting 100% success rate with a median path length of 9.0). I tested this by decreasing my 
