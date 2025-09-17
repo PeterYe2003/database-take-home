@@ -13,7 +13,7 @@ The ideal random walk would go from $0,1,2,...,499$ because that's the order of 
 However, we can't choose our starting node so probably the best we can do is $n, 0,1,2,...,499$ where $n$ is the starting node (though you might run into loops).
 
 The probability of querying a node greater than n is approximately 
-$\int_{n}^{500} 0.1e^{-0.1x)dx$. For $n > 100$, this integral is around $10^{-5}$, so we don't actually care too much
+$\int_{n}^{500} 0.1e^{-0.1x}dx$. For $n > 100$, this integral is around $10^{-5}$, so we don't actually care too much
 being able to reach nodes with large numbers as they're queried so rarely. If we start on a large number, we want to get
 to the $0$ node as quickly as possible, so we want a lot of nodes pointing towards $0$ node.
 
