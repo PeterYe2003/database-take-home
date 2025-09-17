@@ -5,6 +5,8 @@
 
 [Describe how you analyzed the query patterns and what insights you found]
 
+latex test $\int_0^1$
+
 ### Optimization Strategy
 
 [Explain your optimization strategy in detail]
