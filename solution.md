@@ -21,7 +21,7 @@ to the $0$ node as quickly as possible, so we want a lot of nodes pointing towar
 ### Optimization Strategy
 
 I’m being assessed on two metrics being the success rate and the median path length, where
-$$\text{path_multiplier} = \log(1+ \frac{\text{random_median}}{\text{optimized_median}})$$
+$$\text{path multiplier} = \log(1+ \frac{\text{random median}}{\text{optimized median}})$$
 My combined score is just $optimized rate * (1+path_multiplier)$.
 
 Thus, my goal is to optimize for the median path length while maintaining a high overall success rate. 
