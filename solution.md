@@ -26,24 +26,24 @@ My combined score is just $\text{optimized rate} * (1+\text{path multiplier})$.
 
 Thus, my goal is to optimize for the median path length while maintaining a high overall success rate. This was interesting
 because optimizing for median performance is quite different from optimizing for average performance. In order to get a low median path length,
-we need to start with the path n, 0, 1, ..., 499 frequently. This requires $n$ to have a high edge weight to 0, but this will
-result in a lot of loops because we could go n,0,1,...,n,0....
+we need to start with the path n, 0, 1, ..., 499 frequently. This requires $n$ to have a high edge weight to 0, but a tradeoff is that 
+the random walk will have more loops because we could go n,0,1,...,n,0....
 
 First optimization is to make sure we spend as little time as possible traversing large nodes. We do this by having only giving them outgoing
 edges to 0, and no incoming edges. We say large nodes are nodes > 90, as they collectively have less than a 0.03% chance to be queried.
 Second optimization is to connect the nodes in a chain $0 \to 1 \to 2 \to ... \to 90$. This way, after we hit node 0, we start on the optimal path.
 
 For nodes > 7, we also give them a low chance to be sent back to 0. This is good, because 7,...,15 is strictly worse than
-a walk that goes from 7,0,1,...,6. Also, the best possible median is 8 (will justify in iteration journey), so we want to
+a walk that goes from 7,0,1,...,6. Also, the best possible median is 8 (will justify in results), so we want to
 maximize P(path length <= 8), and overall success ratio. Looping to 0 increases the chance of getting a short path, but decreases 
-the chance we succeed in finding the node (as we will have more loops in our path, so we might not reach node 90 before 10k steps).
+the chance we succeed in finding the node (as we will have more loops in our path, so we might not reach larger nodes before 10k steps).
 
 
 ### Implementation Details
 
-The implementation was extremely straightforward. I just did edges from n to n+1 for $n \leq 90$, some edges to 0
-where the weight is linearly increasing with respect to $n$ for $8 \leq n \leq 90$, and for $n > 90$, I had
-only one edge going to 0.
+The implementation was straightforward. I created edges from n to n+1 for $n \leq 90$, edges to 0
+where the weight was linearly increasing with respect to $n$ for $8 \leq n \leq 90$. For $n > 90$, I had
+only one edge going to the 0 node.
 
 ### Results
 
@@ -83,4 +83,7 @@ always went to $0$. This was the biggest improvement in my method, as it did not
 median path length to 9. The only way to improve my graph beyond this point was to decrease my median path length to 8.
 However, for this to be a worthwhile effort, $\text{optimized rate} * (1+\log(1+\frac{560}{8})) > 100 * (1+\log(1+\frac{560}{9}))$, as the
 naive random path length was around 560. Thus, the success rate must be greater than 98.22% (otherwise we’re better off 
-just getting 100% success rate with a median path length of 9.0). I tested this by decreasing my 
+just getting 100% success rate with a median path length of 9.0). I was able to achieve a good accuracy by just playing around with the bound I used
+for when I only gave the nodes an edge to 0, and the weights on the backward edges from 8 onwards.
+
+Overall this was a very fun problem!
